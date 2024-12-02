@@ -3,6 +3,9 @@ package sg.edu.nus.iss.vttp5b_ssf_day18l.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import sg.edu.nus.iss.vttp5b_ssf_day18l.model.Carpark;
@@ -20,9 +23,11 @@ public class CarparkRestController {
     CarparkService carparkService;
 
     @GetMapping("")
-    public List<Carpark> getCarparks() {
+    public ResponseEntity<List<Carpark>> getCarparks() {
         List<Carpark> carparks = carparkService.getCarparks();
-        return carparks;
+        
+        // return new ResponseEntity<>(carparks, HttpStatus.OK);
+        return ResponseEntity.ok().body(carparks);
     }
     
 

@@ -24,19 +24,24 @@ public class CarparkService {
         String carparkRawData = restTemplate.getForObject(Constant.carparkUrl, String.class);
 
         JsonReader jReader = Json.createReader(new StringReader(carparkRawData));
-        JsonObject jObject = jReader.readObject();
-        JsonArray jArray = jObject.getJsonObject("result").getJsonArray("records");
+        JsonObject jObject = jReader.readObject(); // the entire json string
+        JsonObject jResultObject = jObject.getJsonObject("result"); // the result object inside the entire json string
+                                                                    // (object)
+
+        JsonArray jArray = jResultObject.getJsonArray("records");
 
         List<Carpark> carparks = new ArrayList<>();
         for (int i = 0; i < jArray.size(); i++) {
-            Carpark c = new Carpark(jArray.get(i).asJsonObject().getInt("_id"),
-                    jArray.get(i).asJsonObject().getString("carpark"),
-                    jArray.get(i).asJsonObject().getString("category"),
-                    jArray.get(i).asJsonObject().getString("weekdays_rate_1"),
-                    jArray.get(i).asJsonObject().getString("weekdays_rate_2"),
-                    jArray.get(i).asJsonObject().getString("saturday_rate"),
-                    jArray.get(i).asJsonObject().getString("sunday_publicholiday_rate"));
-                carparks.add(c);
+            JsonObject j = jArray.get(i).asJsonObject();
+
+            Carpark c = new Carpark(j.getInt("_id"),
+                    j.getString("carpark"),
+                    j.getString("category"),
+                    j.getString("weekdays_rate_1"),
+                    j.getString("weekdays_rate_2"),
+                    j.getString("saturday_rate"),
+                    j.getString("sunday_publicholiday_rate"));
+            carparks.add(c);
         }
 
         return carparks;

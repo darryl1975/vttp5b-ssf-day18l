@@ -6,4 +6,6 @@ public class Constant {
     
 
     public static final String carparkUrl = "https://data.gov.sg/api/action/datastore_search?resource_id=d_9f6056bdb6b1dfba57f063593e4f34ae";
+
+    public static final String localCarparkUrl = "http://localhost:4000/api/carparks";
 }
