@@ -23,7 +23,7 @@ public class CarparkRestController {
     CarparkService carparkService;
 
     @GetMapping("")
-    public ResponseEntity<List<Carpark>> getCarparks() {
+    public ResponseEntity<List<Carpark>> getCarparks() { // List<Carpark>
         List<Carpark> carparks = carparkService.getCarparks();
         
         // return new ResponseEntity<>(carparks, HttpStatus.OK);
