@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -120,7 +121,7 @@ public class DemoController {
 
         // serialize using Json-P to JsonArray
         JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-        for (Person p1: personsList) {
+        for (Person p1 : personsList) {
             JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
             jsonObjectBuilder.add("id", p1.getId());
             jsonObjectBuilder.add("fullName", p1.getFullName());
@@ -135,17 +136,53 @@ public class DemoController {
         // save the list to hash in redis - play cheat (please do not do this in exam)
         redisTemplate.opsForHash().put("persons", "map", personsList.toString());
 
-        // save the list to hash in redis - this is the right method to serialize json string
+        // save the list to hash in redis - this is the right method to serialize json
+        // string
         redisTemplate.opsForHash().put("persons", "map", jsonArray.toString());
 
         // retrieve the list from redis
         Object objWords = redisTemplate.opsForHash().get("persons", "map");
-        
+
         // deserialize using Json-P back to collection of persons, List<Person>
         // change return datatype to collection of persons, List<Person>
         // return collection of persons, List<Person>
 
         return objWords.toString();
+    }
+
+    @GetMapping("/testperson/revised")
+    @ResponseBody
+    public String testPersonHashRevised() {
+        List<Person> personsList = new ArrayList<>();
+        Person p = new Person(1, "Darryl", "darrylng@nus.edu.sg", "530363", "97445556");
+        personsList.add(p);
+        p = new Person(2, "Nancy", "nancy@nus.edu.sg", "119615", "88580067");
+        personsList.add(p);
+
+        // serialize using Json-P to JsonObject
+        for (Person p1 : personsList) {
+            JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
+            jsonObjectBuilder.add("id", p1.getId());
+            jsonObjectBuilder.add("fullName", p1.getFullName());
+            jsonObjectBuilder.add("email", p1.getEmail());
+            jsonObjectBuilder.add("phoneNumber", p1.getPhoneNumber());
+            jsonObjectBuilder.add("postalCode", p1.getPostalCode());
+            JsonObject jsonObject = jsonObjectBuilder.build();
+
+            // save the object to hash in redis - this is the right method to serialize json
+            // string
+            redisTemplate.opsForHash().put("persons", p1.getId().toString(), jsonObject.toString());
+
+        }
+        // retrieve the list from redis
+        Map<Object, Object> person = redisTemplate.opsForHash().entries("persons");
+
+        for (Map.Entry<Object, Object> entry : person.entrySet()) {
+            System.out.println("Key = " + entry.getKey().toString() +
+                    ", Value = " + entry.getValue().toString());
+        }
+
+        return person.toString();
     }
 
 }
