@@ -36,5 +36,6 @@ EXPOSE ${SERVER_PORT}
 
 ENTRYPOINT java -jar vttp5b-ssf-day18l.jar
 
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl -s -f http:/localhost:4000/demo/health || exit 1
 
 
