@@ -15,20 +15,23 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import sg.edu.nus.iss.vttp5b_ssf_day18l.constant.Constant;
+import sg.edu.nus.iss.vttp5b_ssf_day18l.model.Person;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-
 
 @Controller
 @RequestMapping("/demo")
 public class DemoController {
 
     @Autowired
-    @Qualifier(Constant.template01)
+    @Qualifier(Constant.template02)
     RedisTemplate<String, String> redisTemplate;
 
     // day 18 - slide 8
@@ -52,7 +55,7 @@ public class DemoController {
     private void checkHealth() {
         // get random number between 0 and 10
 
-        // if random number is between 0 and 5 
+        // if random number is between 0 and 5
         // throw an exception
         // means there is an exception/error (simulating exception)
 
@@ -77,8 +80,8 @@ public class DemoController {
 
     @GetMapping("/test")
     @ResponseBody
-    public String testHash() {
-        
+    public List<String> testHash() {
+
         List<String> wordList = new ArrayList<>();
         wordList.add("Marina");
         wordList.add("Park");
@@ -90,8 +93,57 @@ public class DemoController {
         // save the list to hash in redis
         redisTemplate.opsForHash().put("words", "map", wordList.toString());
 
-        // retrieve the list from redis 
+        // retrieve the list from redis
         Object objWords = redisTemplate.opsForHash().get("words", "map");
+        String strObject = objWords.toString();
+        strObject = strObject.replace("[", "");
+        strObject = strObject.replace("]", "");
+        strObject = strObject.replace(" ", "");
+        String[] splitWord = strObject.split(",");
+
+        List<String> retrievedList = new ArrayList<>();
+        for (String s : splitWord) {
+            retrievedList.add(s);
+        }
+
+        return retrievedList;
+    }
+
+    @GetMapping("/testperson")
+    @ResponseBody
+    public String testPersonHash() {
+        List<Person> personsList = new ArrayList<>();
+        Person p = new Person(1, "Darryl", "darrylng@nus.edu.sg", "530363", "97445556");
+        personsList.add(p);
+        p = new Person(2, "Nancy", "nancy@nus.edu.sg", "119615", "88580067");
+        personsList.add(p);
+
+        // serialize using Json-P to JsonArray
+        JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+        for (Person p1: personsList) {
+            JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
+            jsonObjectBuilder.add("id", p1.getId());
+            jsonObjectBuilder.add("fullName", p1.getFullName());
+            jsonObjectBuilder.add("email", p1.getEmail());
+            jsonObjectBuilder.add("phoneNumber", p1.getPhoneNumber());
+            jsonObjectBuilder.add("postalCode", p1.getPostalCode());
+            JsonObject jsonObject = jsonObjectBuilder.build();
+            jsonArrayBuilder.add(jsonObject);
+        }
+        JsonArray jsonArray = jsonArrayBuilder.build();
+
+        // save the list to hash in redis - play cheat (please do not do this in exam)
+        redisTemplate.opsForHash().put("persons", "map", personsList.toString());
+
+        // save the list to hash in redis - this is the right method to serialize json string
+        redisTemplate.opsForHash().put("persons", "map", jsonArray.toString());
+
+        // retrieve the list from redis
+        Object objWords = redisTemplate.opsForHash().get("persons", "map");
+        
+        // deserialize using Json-P back to collection of persons, List<Person>
+        // change return datatype to collection of persons, List<Person>
+        // return collection of persons, List<Person>
 
         return objWords.toString();
     }

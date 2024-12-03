@@ -87,7 +87,13 @@ public class Person {
 
     @Override
     public String toString() {
-        return id + "," + fullName + "," + email + "," + postalCode + "," + phoneNumber;
+        return "{ " +
+            "\"id\": " + id + "," +
+            "\"fullName\": \"" + fullName + "\"," + 
+            "\"email\": \"" + email + "\"," + 
+            "\"postalCode\": \"" + postalCode + "\"," + 
+            "\"phoneNumber\": \"" + phoneNumber + "\"" +
+            "}";
     }
 
     

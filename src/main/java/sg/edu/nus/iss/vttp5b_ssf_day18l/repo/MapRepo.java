@@ -14,7 +14,7 @@ public class MapRepo {
 
     @Autowired
     @Qualifier(Constant.template02)
-    RedisTemplate redisTemplate;
+    RedisTemplate<String, String> redisTemplate;
 
     // day 15 - slide 36
     public void createHash(String key, String hashKey, String value) {
