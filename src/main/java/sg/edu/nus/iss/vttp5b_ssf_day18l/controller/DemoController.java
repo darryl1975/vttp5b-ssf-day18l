@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,7 +42,7 @@ public class DemoController {
         ModelAndView mav = new ModelAndView();
 
         try {
-            // checkHealth();
+            checkHealth();
 
             mav.setViewName("healthy");
             mav.setStatus(HttpStatusCode.valueOf(200));
@@ -53,13 +54,17 @@ public class DemoController {
         return mav;
     }
 
-    private void checkHealth() {
+    private void checkHealth() throws Exception {
         // get random number between 0 and 10
+        Random random = new Random();
+        Integer value = random.nextInt(0, 10);
 
         // if random number is between 0 and 5
         // throw an exception
         // means there is an exception/error (simulating exception)
-
+        if (value <= 5) {
+            throw new Exception("Simulating error..." + value.toString());
+        }
         // else do nothing
     }
 
